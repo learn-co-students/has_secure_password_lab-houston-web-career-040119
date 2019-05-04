@@ -6,16 +6,16 @@ class SessionsController < ApplicationController
 
   def create
     if params["name"]
-      @user = User.all.where(name: params["name"]).where(password: params["password"]).first
+      @user = User.all.where(name: params["name"]).first&.authenticate(params["password"])
     else
-      @user = User.where(user_params).first
+      @user = User.where(params.require(:user).permit(:name)).first&.authenticate(params.require(:user).permit(:password)[:password])
     end
 
     if @user
       session[:user_id] = @user.id
-      redirect_to '/' ##########
+      redirect_to '/'
     else
-      redirect_to '/'  #############
+      redirect_to '/'
     end
   end
 
